@@ -5,9 +5,10 @@ from django.conf.urls.static import static
 
 # Importamos TODAS as funções do views.py
 from core.views import (
-    lista_alunos, 
+lista_alunos, 
     editar_aluno, 
     renovar_matricula, 
+    contratar_plano,            
     registrar_presenca,
     excluir_pagamento,
     alterar_data_vencimento,
@@ -43,6 +44,7 @@ urlpatterns = [
     path('plano/criar/', criar_plano, name='criar_plano'),
     path('plano/editar/<int:id>/', editar_plano, name='editar_plano'),
     path('plano/excluir/<int:id>/', excluir_plano, name='excluir_plano'),
+    path('contratar_plano/<int:id_aluno>/', contratar_plano, name='contratar_plano'),
 ]
 
 # Configuração de Imagens

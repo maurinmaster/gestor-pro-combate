@@ -270,3 +270,42 @@ def excluir_plano(request, id):
         # Se o plano estiver em uso por alunos, pode dar erro (proteção do banco)
         pass 
     return redirect('lista_planos')
+
+@login_required
+def contratar_plano(request, id_aluno):
+    if request.method == 'POST':
+        aluno = get_object_or_404(Aluno, pk=id_aluno)
+        
+        # 1. Pega os dados do formulário
+        plano_id = request.POST.get('plano_id')
+        valor = request.POST.get('valor')
+        
+        # Tratamento do valor (troca vírgula por ponto)
+        valor_final = float(valor.replace(',', '.'))
+        
+        plano = get_object_or_404(Plano, pk=plano_id)
+        
+        # 2. Cria a nova Matrícula
+        hoje = timezone.now().date()
+        vencimento = hoje + timedelta(days=30)
+        
+        # Verifica se já existe alguma matrícula antiga e desativa (só por segurança)
+        Matricula.objects.filter(aluno=aluno).update(ativo=False)
+        
+        Matricula.objects.create(
+            aluno=aluno,
+            plano=plano,
+            data_inicio=hoje,
+            data_vencimento=vencimento,
+            ativo=True,
+            trancada=False
+        )
+        
+        # 3. Registra o Pagamento Inicial
+        Pagamento.objects.create(
+            aluno=aluno,
+            valor=valor_final,
+            descricao=f"Matrícula Inicial: {plano.nome}"
+        )
+        
+    return redirect('editar_aluno', id=id_aluno)
