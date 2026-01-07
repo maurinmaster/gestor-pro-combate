@@ -12,7 +12,11 @@ from core.views import (
     excluir_pagamento,
     alterar_data_vencimento,
     trancar_destrancar_matricula,
-    relatorio_financeiro  # <--- Esta era a que faltava!
+    relatorio_financeiro,
+    lista_planos,
+    criar_plano,
+    editar_plano,
+    excluir_plano
 )
 
 urlpatterns = [
@@ -32,7 +36,13 @@ urlpatterns = [
     path('excluir_pagamento/<int:id_pagamento>/', excluir_pagamento, name='excluir_pagamento'),
     
     # Financeiro
-    path('financeiro/', relatorio_financeiro, name='relatorio_financeiro'), # <--- Rota nova
+    path('financeiro/', relatorio_financeiro, name='relatorio_financeiro'),
+    
+    # Gestão de Planos
+    path('planos/', lista_planos, name='lista_planos'),
+    path('plano/criar/', criar_plano, name='criar_plano'),
+    path('plano/editar/<int:id>/', editar_plano, name='editar_plano'),
+    path('plano/excluir/<int:id>/', excluir_plano, name='excluir_plano'),
 ]
 
 # Configuração de Imagens

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Aluno, Matricula, Presenca, Pagamento, Plano
-from .forms import AlunoForm
+from .forms import AlunoForm, PlanoForm
 from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Q
@@ -228,3 +228,45 @@ def relatorio_financeiro(request):
     }
     
     return render(request, 'core/financeiro.html', context)
+
+# --- GESTÃO DE PLANOS ---
+
+@login_required
+def lista_planos(request):
+    planos = Plano.objects.all()
+    return render(request, 'core/lista_planos.html', {'planos': planos})
+
+@login_required
+def criar_plano(request):
+    if request.method == 'POST':
+        form = PlanoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_planos')
+    else:
+        form = PlanoForm()
+    
+    return render(request, 'core/form_plano.html', {'form': form, 'titulo': 'Novo Plano'})
+
+@login_required
+def editar_plano(request, id):
+    plano = get_object_or_404(Plano, pk=id)
+    if request.method == 'POST':
+        form = PlanoForm(request.POST, instance=plano)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_planos')
+    else:
+        form = PlanoForm(instance=plano)
+        
+    return render(request, 'core/form_plano.html', {'form': form, 'titulo': 'Editar Plano'})
+
+@login_required
+def excluir_plano(request, id):
+    plano = get_object_or_404(Plano, pk=id)
+    try:
+        plano.delete()
+    except:
+        # Se o plano estiver em uso por alunos, pode dar erro (proteção do banco)
+        pass 
+    return redirect('lista_planos')

@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block conteudo %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="bi bi-card-checklist"></i> Planos de Treino</h2>
+    <a href="{% url 'criar_plano' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Novo Plano
+    </a>
+</div>
+
+<div class="row">
+    {% for plano in planos %}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h4 class="card-title fw-bold text-primary">{{ plano.nome }}</h4>
+                    <h4 class="fw-bold text-dark">R$ {{ plano.preco }}</h4>
+                </div>
+                <p class="card-text text-muted mt-2">{{ plano.descricao|linebreaks }}</p>
+            </div>
+            <div class="card-footer bg-white border-top-0 d-flex justify-content-end gap-2 pb-3">
+                <a href="{% url 'editar_plano' plano.id %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'excluir_plano' plano.id %}" 
+                   class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('Tem certeza? Se houver alunos neste plano, não será possível excluir.')">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">Nenhum plano cadastrado.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
