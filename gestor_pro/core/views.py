@@ -309,3 +309,16 @@ def contratar_plano(request, id_aluno):
         )
         
     return redirect('editar_aluno', id=id_aluno)
+
+@login_required
+def criar_aluno(request):
+    if request.method == 'POST':
+        form = AlunoForm(request.POST, request.FILES)
+        if form.is_valid():
+            aluno = form.save()
+            # Redireciona direto para a página de contratação de plano
+            return redirect('editar_aluno', id=aluno.id)
+    else:
+        form = AlunoForm()
+    
+    return render(request, 'core/form_aluno.html', {'form': form})

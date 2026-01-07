@@ -41,9 +41,9 @@
 </div>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Alunos</h2>
-    <a href="/admin/core/aluno/add/" class="btn btn-primary btn-sm rounded-pill">
-        <i class="bi bi-plus-lg"></i> Novo
-    </a>
+    <a href="{% url 'criar_aluno' %}" class="btn btn-primary btn-sm rounded-pill">
+    <i class="bi bi-plus-lg"></i> Novo
+</a>
 </div>
 
 <form method="GET" action="{% url 'home' %}" class="mb-4">
