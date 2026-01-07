@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+
+{% block conteudo %}
+<h2 class="mb-4"><i class="bi bi-wallet2"></i> Fluxo de Caixa</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center p-4">
+                <h5 class="card-title opacity-75">Faturação de {{ mes_atual }}</h5>
+                <h1 class="display-4 fw-bold">R$ {{ total_mes }}</h1>
+                <small>Total recebido em pagamentos</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Extrato de Movimentações</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Data</th>
+                    <th>Aluno</th>
+                    <th>Descrição</th>
+                    <th class="text-end">Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pg in todos_pagamentos %}
+                <tr>
+                    <td>{{ pg.data_pagamento|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'editar_aluno' pg.aluno.id %}" class="text-decoration-none fw-bold text-dark">
+                            {{ pg.aluno.nome_completo }}
+                        </a>
+                    </td>
+                    <td class="text-muted small">{{ pg.descricao }}</td>
+                    <td class="text-end fw-bold text-success">+ R$ {{ pg.valor }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-muted">
+                        Nenhum pagamento registado ainda.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
