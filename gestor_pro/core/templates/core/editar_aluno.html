@@ -61,22 +61,50 @@
             </div>
         </div>
 
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-light">
-                <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history"></i> Últimos Treinos</h6>
+<div class="card mb-4 shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-calendar3"></i> Frequência: {{ mes_atual_nome }}</h6>
+                <span class="badge bg-success rounded-pill">{{ aluno.get_presencas_mes }} aulas</span>
             </div>
-            <ul class="list-group list-group-flush">
-                {% for presenca in presencas %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ presenca.data_aula|date:"d/m/Y" }} 
-                        <span class="badge bg-success rounded-pill">Presente</span>
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted text-center py-3">
-                        Nenhuma presença registada.
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center table-sm mb-0" style="table-layout: fixed;">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-danger">Dom</th>
+                                <th>Seg</th>
+                                <th>Ter</th>
+                                <th>Qua</th>
+                                <th>Qui</th>
+                                <th>Sex</th>
+                                <th>Sáb</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for semana in calendario %}
+                            <tr>
+                                {% for dia in semana %}
+                                    {% if dia is None %}
+                                        <td class="bg-light"></td> {% else %}
+                                        <td class="position-relative p-2 
+                                            {% if dia.presente %}bg-success text-white fw-bold{% endif %}
+                                            {% if dia.hoje %}border border-3 border-primary{% endif %}">
+                                            
+                                            {{ dia.dia }}
+                                            
+                                            {% if dia.presente %}
+                                                <i class="bi bi-check-lg position-absolute top-0 end-0" style="font-size: 0.6rem; padding: 2px;"></i>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <small class="text-muted mt-2 d-block text-center">* Dias em verde indicam presença confirmada.</small>
+            </div>
         </div>
 
         <div class="card mb-4 shadow-sm border-success">

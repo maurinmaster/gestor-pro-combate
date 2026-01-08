@@ -69,8 +69,9 @@
 {% for aluno in alunos %}
         {% with situacao=aluno.get_situacao %}
         
-        <div class="col-12 col-md-6 col-lg-4 mb-3">
-            <div class="card card-aluno shadow-sm position-relative h-100 border-0">
+<div class="col-12 col-md-6 col-lg-4 mb-3">
+            <div class="card card-aluno shadow-sm position-relative h-100 
+                        {% if aluno.treinou_hoje %}border border-success border-3{% else %}border-0{% endif %}">
                 
                 <span class="position-absolute top-0 end-0 badge rounded-0 rounded-bottom-start bg-{{ situacao.cor }}" style="z-index: 10;">
                     {{ situacao.texto }}
@@ -91,7 +92,6 @@
                     </div>
                     
                     <div class="flex-grow-1 overflow-hidden">
-                        
                         <div class="d-flex justify-content-between align-items-start">
                             <a href="{% url 'editar_aluno' aluno.id %}" class="text-decoration-none text-dark">
                                 <h5 class="card-title mb-1 fw-bold text-truncate" style="max-width: 140px;">
@@ -99,9 +99,15 @@
                                 </h5>
                             </a>
                             
-                            <a href="{% url 'registrar_presenca' aluno.id %}" class="btn btn-light btn-sm text-primary border shadow-sm" title="Marcar Presença de Hoje">
-                                <i class="bi bi-lightning-charge-fill"></i>
-                            </a>
+                            {% if aluno.treinou_hoje %}
+                                <button class="btn btn-success btn-sm disabled" title="Presença Confirmada">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                            {% else %}
+                                <a href="{% url 'registrar_presenca' aluno.id %}" class="btn btn-light btn-sm text-primary border shadow-sm" title="Marcar Presença">
+                                    <i class="bi bi-lightning-charge-fill"></i>
+                                </a>
+                            {% endif %}
                         </div>
                         
                         <div class="small text-muted mb-2 mt-1">

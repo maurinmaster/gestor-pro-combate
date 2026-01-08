@@ -7,12 +7,13 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib import messages
 from django.db.models import Sum
+import calendar
+from datetime import date
 
 @login_required
 def lista_alunos(request):
-    # --- 1. Lógica da Busca (igual ao anterior) ---
+    # 1. Lógica de Busca (Mantém igual)
     termo_busca = request.GET.get('busca')
-
     if termo_busca:
         alunos = Aluno.objects.filter(
             Q(nome_completo__icontains=termo_busca) |
@@ -20,47 +21,73 @@ def lista_alunos(request):
         ).order_by('nome_completo')
     else:
         alunos = Aluno.objects.all().order_by('nome_completo')
-    
-    # --- 2. Lógica das Estatísticas (NOVO) ---
+
+    # --- NOVO: Descobrir quem já veio hoje ---
     hoje = timezone.now().date()
     
-    # Conta quantos alunos existem no total
+    # Pega a lista de IDs de alunos que têm presença HOJE
+    ids_presentes_hoje = Presenca.objects.filter(data_aula=hoje).values_list('aluno_id', flat=True)
+    
+    # Adiciona uma "etiqueta" temporária em cada aluno da lista
+    for aluno in alunos:
+        aluno.treinou_hoje = aluno.id in ids_presentes_hoje
+
+    # 2. Estatísticas (Mantém igual)
     total_alunos = Aluno.objects.count()
-    
-    # Conta matrículas ativas que vencem hoje ou no futuro (>= hoje)
-    # __gte significa "Greater Than or Equal" (Maior ou igual)
-    alunos_em_dia = Matricula.objects.filter(
-        ativo=True, 
-        data_vencimento__gte=hoje
-    ).count()
-    
-    # Conta matrículas ativas que já venceram (< hoje)
-    # __lt significa "Less Than" (Menor que)
-    alunos_vencidos = Matricula.objects.filter(
-        ativo=True, 
-        data_vencimento__lt=hoje
-    ).count()
+    alunos_em_dia = Matricula.objects.filter(ativo=True, data_vencimento__gte=hoje).count()
+    alunos_vencidos = Matricula.objects.filter(ativo=True, data_vencimento__lt=hoje).count()
 
     context = {
         'alunos': alunos,
         'termo_busca': termo_busca,
-        # Passamos os números para o HTML
         'total_alunos': total_alunos,
         'alunos_em_dia': alunos_em_dia,
         'alunos_vencidos': alunos_vencidos,
     }
-    
     return render(request, 'core/lista_alunos.html', context)
 
 @login_required
 def editar_aluno(request, id):
     aluno = get_object_or_404(Aluno, pk=id)
     matricula = aluno.matricula_set.first()
-    presencas = aluno.presenca_set.all().order_by('-data_aula')[:10]
     pagamentos = aluno.pagamento_set.all().order_by('-data_pagamento')[:5]
-    
-    # --- NOVO: Enviar todos os planos para preencher a lista de opções ---
     todos_planos = Plano.objects.all()
+
+    # --- LÓGICA DO CALENDÁRIO ---
+    hoje = timezone.now()
+    ano = hoje.year
+    mes = hoje.month
+    
+    # 1. Pega todas as datas que o aluno veio neste mês/ano
+    dias_presenca = Presenca.objects.filter(
+        aluno=aluno,
+        data_aula__year=ano, 
+        data_aula__month=mes
+    ).values_list('data_aula', flat=True)
+    
+    # Converte para um conjunto de números (ex: {5, 12, 14}) para ser rápido de buscar
+    dias_presenca_set = {d.day for d in dias_presenca}
+
+    # 2. Gera o calendário do mês (matriz de semanas)
+    cal = calendar.Calendar(firstweekday=6) # 6 = Domingo
+    dias_do_mes = cal.monthdayscalendar(ano, mes)
+    
+    # 3. Cria uma lista estruturada para o HTML
+    calendario_html = []
+    for semana in dias_do_mes:
+        semana_html = []
+        for dia in semana:
+            if dia == 0:
+                semana_html.append(None) # Dia de outro mês
+            else:
+                semana_html.append({
+                    'dia': dia,
+                    'presente': dia in dias_presenca_set, # True ou False
+                    'hoje': (dia == hoje.day)
+                })
+        calendario_html.append(semana_html)
+
+    # --- FIM LOGICA CALENDÁRIO ---
 
     if request.method == 'POST':
         form = AlunoForm(request.POST, request.FILES, instance=aluno)
@@ -74,9 +101,11 @@ def editar_aluno(request, id):
         'form': form,
         'aluno': aluno,
         'matricula': matricula,
-        'presencas': presencas,
         'pagamentos': pagamentos,
-        'todos_planos': todos_planos # <--- Enviamos isto para o HTML
+        'todos_planos': todos_planos,
+        # Enviamos o calendário pronto
+        'calendario': calendario_html,
+        'mes_atual_nome': hoje.strftime('%B/%Y')
     }
     return render(request, 'core/editar_aluno.html', context)
 
@@ -147,9 +176,9 @@ def registrar_presenca(request, id_aluno):
     aluno = get_object_or_404(Aluno, pk=id_aluno)
     hoje = timezone.now().date()
     
-    # Verifica se já existe presença hoje
+    # --- CORREÇÃO: Verifica se já existe ---
     if Presenca.objects.filter(aluno=aluno, data_aula=hoje).exists():
-        messages.warning(request, f'O aluno {aluno.nome_completo} já tem presença hoje!')
+        messages.warning(request, f'O aluno {aluno.nome_completo} JÁ treinou hoje!')
     else:
         Presenca.objects.create(aluno=aluno, data_aula=hoje)
         messages.success(request, f'Presença confirmada: {aluno.nome_completo} ✅')
