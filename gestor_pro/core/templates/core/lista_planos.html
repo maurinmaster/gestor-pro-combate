@@ -23,9 +23,8 @@
                 <a href="{% url 'editar_plano' plano.id %}" class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-pencil"></i> Editar
                 </a>
-                <a href="{% url 'excluir_plano' plano.id %}" 
-                   class="btn btn-outline-danger btn-sm"
-                   onclick="return confirm('Tem certeza? Se houver alunos neste plano, não será possível excluir.')">
+                <a href="{% url 'excluir_plano' plano.id %}" class="btn btn-outline-danger btn-sm"
+                    onclick="return confirm('Tem certeza? Se houver alunos neste plano, não será possível excluir.')">
                     <i class="bi bi-trash"></i>
                 </a>
             </div>

@@ -2,142 +2,141 @@
 
 {% block conteudo %}
 
-{% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="row mb-4 g-3">
+    <div class="col-12 col-md-4">
+        <div class="card h-100 bg-primary text-white position-relative overflow-hidden border-0 shadow-lg">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Total de Alunos</h6>
+                        <h2 class="display-5 fw-bold mb-0">{{ total_alunos }}</h2>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-3 p-2">
+                        <i class="bi bi-people-fill fs-4 text-white"></i>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
-    {% endif %}
+            <i class="bi bi-people-fill position-absolute bottom-0 end-0 opacity-10" style="font-size: 6rem; margin-right: -20px; margin-bottom: -20px;"></i>
+        </div>
+    </div>
 
-<div class="row mb-4 text-center">
-    <div class="col-4">
-        <div class="card shadow-sm border-0 bg-primary text-white">
-            <div class="card-body p-2">
-                <h3 class="mb-0 fw-bold">{{ total_alunos }}</h3>
-                <small style="font-size: 0.75rem;">Total</small>
+    <div class="col-6 col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="d-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle me-2" style="width: 32px; height: 32px;">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                    <span class="fw-bold text-muted small text-uppercase">Em Dia</span>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark">{{ alunos_em_dia }}</h3>
             </div>
         </div>
     </div>
 
-    <div class="col-4">
-        <div class="card shadow-sm border-0 bg-success text-white">
-            <div class="card-body p-2">
-                <h3 class="mb-0 fw-bold">{{ alunos_em_dia }}</h3>
-                <small style="font-size: 0.75rem;">Em Dia</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-4">
-        <div class="card shadow-sm border-0 bg-danger text-white">
-            <div class="card-body p-2">
-                <h3 class="mb-0 fw-bold">{{ alunos_vencidos }}</h3>
-                <small style="font-size: 0.75rem;">Vencidos</small>
+    <div class="col-6 col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="d-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle me-2" style="width: 32px; height: 32px;">
+                        <i class="bi bi-exclamation-lg"></i>
+                    </span>
+                    <span class="fw-bold text-muted small text-uppercase">Vencidos</span>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark">{{ alunos_vencidos }}</h3>
             </div>
         </div>
     </div>
 </div>
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Alunos</h2>
-    <a href="{% url 'criar_aluno' %}" class="btn btn-primary btn-sm rounded-pill">
-    <i class="bi bi-plus-lg"></i> Novo
-</a>
+
+<div class="row align-items-center mb-4 g-3">
+    <div class="col-md-8">
+        <form method="GET" action="{% url 'home' %}">
+            <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
+                <span class="input-group-text bg-white border-0 ps-4 text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="busca" class="form-control border-0 ps-2" 
+                       placeholder="Buscar por nome, CPF..." 
+                       value="{{ termo_busca|default:'' }}"
+                       style="font-size: 0.95rem;">
+                <button type="submit" class="btn btn-primary px-4 fw-bold">Buscar</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'criar_aluno' %}" class="btn btn-dark w-100 w-md-auto py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-person-plus-fill"></i> Novo Aluno
+        </a>
+    </div>
 </div>
 
-<form method="GET" action="{% url 'home' %}" class="mb-4">
-    <div class="input-group shadow-sm rounded-pill overflow-hidden">
-        <input type="text" name="busca" class="form-control border-0 ps-4" 
-               placeholder="🔍 Buscar por nome ou CPF..." 
-               value="{{ termo_busca|default:'' }}" 
-               style="height: 50px;">
-               
-        <button type="submit" class="btn btn-primary px-4">
-            Buscar
-        </button>
-        
-        {% if termo_busca %}
-            <a href="{% url 'home' %}" class="btn btn-outline-secondary px-3 d-flex align-items-center">
-                ✖
-            </a>
-        {% endif %}
-    </div>
-</form>
-
-<div class="row">
-{% for aluno in alunos %}
+<div class="row g-3">
+    {% for aluno in alunos %}
         {% with situacao=aluno.get_situacao %}
         
-<div class="col-12 col-md-6 col-lg-4 mb-3">
-            <div class="card card-aluno shadow-sm position-relative h-100 
-                        {% if aluno.treinou_hoje %}border border-success border-3{% else %}border-0{% endif %}">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 position-relative overflow-hidden {% if aluno.treinou_hoje %}border border-2 border-success{% endif %}">
                 
-                <span class="position-absolute top-0 end-0 badge rounded-0 rounded-bottom-start bg-{{ situacao.cor }}" style="z-index: 10;">
-                    {{ situacao.texto }}
-                </span>
-
-                <div class="card-body d-flex align-items-start pt-4">
-                    <div class="flex-shrink-0 me-3">
-                        {% if aluno.foto %}
-                            <img src="{{ aluno.foto.url }}" alt="{{ aluno.nome_completo }}" 
-                                 class="rounded-circle border border-3 border-{{ situacao.cor }}"
-                                 style="width: 70px; height: 70px; object-fit: cover;">
-                        {% else %}
-                            <div class="d-flex justify-content-center align-items-center rounded-circle border border-3 border-{{ situacao.cor }} bg-light text-secondary" 
-                                 style="width: 70px; height: 70px; font-size: 24px; font-weight: bold;">
-                                {{ aluno.nome_completo|slice:":1" }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="flex-grow-1 overflow-hidden">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <a href="{% url 'editar_aluno' aluno.id %}" class="text-decoration-none text-dark">
-                                <h5 class="card-title mb-1 fw-bold text-truncate" style="max-width: 140px;">
-                                    {{ aluno.nome_completo }}
-                                </h5>
-                            </a>
-                            
-                            {% if aluno.treinou_hoje %}
-                                <button class="btn btn-success btn-sm disabled" title="Presença Confirmada">
-                                    <i class="bi bi-check-lg"></i>
-                                </button>
+                <div class="card-body p-3">
+                    <div class="d-flex">
+                        <div class="position-relative flex-shrink-0">
+                            {% if aluno.foto %}
+                                <img src="{{ aluno.foto.url }}" class="rounded-4 object-fit-cover shadow-sm" width="70" height="70" alt="{{ aluno.nome_completo }}">
                             {% else %}
-                                <a href="{% url 'registrar_presenca' aluno.id %}" class="btn btn-light btn-sm text-primary border shadow-sm" title="Marcar Presença">
-                                    <i class="bi bi-lightning-charge-fill"></i>
-                                </a>
+                                <div class="bg-light rounded-4 d-flex justify-content-center align-items-center text-secondary fw-bold shadow-sm" style="width: 70px; height: 70px; font-size: 1.5rem;">
+                                    {{ aluno.nome_completo|slice:":1" }}
+                                </div>
                             {% endif %}
+                            
+                            <span class="position-absolute top-0 start-100 translate-middle p-2 border border-2 border-white rounded-circle bg-{{ situacao.cor }}" 
+                                  title="{{ situacao.texto }}" data-bs-toggle="tooltip">
+                                <span class="visually-hidden">{{ situacao.texto }}</span>
+                            </span>
                         </div>
                         
-                        <div class="small text-muted mb-2 mt-1">
-                            <div class="d-flex align-items-center mb-1">
-                                <i class="bi bi-award-fill me-2 text-primary"></i> 
-                                <span>{{ aluno.graduacao }}</span>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="mb-1 fw-bold text-truncate" style="max-width: 85%;">
+                                    <a href="{% url 'editar_aluno' aluno.id %}" class="text-dark text-decoration-none stretched-link">
+                                        {{ aluno.nome_completo }}
+                                    </a>
+                                </h6>
                             </div>
                             
-                            <div class="d-flex align-items-center mb-1 text-dark fw-bold">
-                                <i class="bi bi-calendar-check me-2 text-success"></i>
-                                <span>{{ aluno.get_presencas_mes }} treinos este mês</span>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-card-checklist me-2 text-primary"></i>
-                                <span class="text-truncate">{{ situacao.plano }}</span>
-                            </div>
+                            <p class="text-muted small mb-2 text-truncate">
+                                <i class="bi bi-card-checklist me-1"></i> {{ situacao.plano }}
+                            </p>
+                            
+                            <span class="badge bg-light text-dark border fw-medium rounded-pill px-2 py-1" style="font-size: 0.7rem;">
+                                {{ aluno.graduacao }}
+                            </span>
                         </div>
+                    </div>
 
-                        <div>
-                            {% if situacao.status == 'vencido' %}
-                                 <a href="{{ situacao.link_whatsapp }}" target="_blank" class="btn btn-sm btn-outline-danger w-100 fw-bold shadow-sm">
-                                    <i class="bi bi-whatsapp"></i> Cobrar Agora
-                                 </a>
-                            {% else %}
-                                 <a href="{{ situacao.link_whatsapp }}" target="_blank" class="btn btn-sm btn-outline-success w-100 shadow-sm">
-                                    <i class="bi bi-whatsapp"></i> Mensagem
-                                 </a>
-                            {% endif %}
-                        </div>
+                    <hr class="my-3 border-light">
+
+                    <div class="d-flex gap-2 position-relative" style="z-index: 2;">
+                        
+                        {% if aluno.treinou_hoje %}
+                            <button class="btn btn-success btn-sm flex-grow-1 disabled opacity-75 fw-bold" style="border-radius: 8px;">
+                                <i class="bi bi-check-circle-fill me-1"></i> Confirmado
+                            </button>
+                        {% else %}
+                            <a href="{% url 'registrar_presenca' aluno.id %}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold" style="border-radius: 8px;">
+                                <i class="bi bi-lightning-charge-fill me-1"></i> Presença
+                            </a>
+                        {% endif %}
+                        
+                        {% if situacao.status == 'vencido' %}
+                            <a href="{{ situacao.link_whatsapp }}" target="_blank" class="btn btn-danger btn-sm px-3" title="Cobrar" style="border-radius: 8px;">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        {% else %}
+                            <a href="{{ situacao.link_whatsapp }}" target="_blank" class="btn btn-light btn-sm px-3 border text-success" title="Enviar Mensagem" style="border-radius: 8px;">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -145,10 +144,15 @@
 
         {% endwith %}
     {% empty %}
-        <div class="col-12 text-center mt-5">
-            <div class="alert alert-light" role="alert">
-                Nenhum aluno encontrado com esse nome.
+        <div class="col-12 text-center py-5">
+            <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-muted">
+                <i class="bi bi-search" style="font-size: 2rem;"></i>
             </div>
+            <h5>Nenhum aluno encontrado</h5>
+            <p class="text-muted">Tente buscar por outro termo ou cadastre um novo aluno.</p>
+            {% if termo_busca %}
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">Limpar Busca</a>
+            {% endif %}
         </div>
     {% endfor %}
 </div>

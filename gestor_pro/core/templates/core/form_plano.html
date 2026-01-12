@@ -11,12 +11,12 @@
                 <form method="POST">
                     {% csrf_token %}
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">{{ field.label }}</label>
-                            {{ field }}
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
                     {% endfor %}
-                    
+
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-success btn-lg">Salvar</button>
                         <a href="{% url 'lista_planos' %}" class="btn btn-outline-secondary">Cancelar</a>

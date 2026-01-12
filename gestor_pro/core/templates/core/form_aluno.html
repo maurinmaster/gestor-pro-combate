@@ -10,21 +10,22 @@
             <div class="card-body p-4">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
+
                     <div class="alert alert-light text-center mb-4">
-                        <small class="text-muted">Preencha os dados abaixo. A matrícula e o plano serão definidos na próxima etapa.</small>
+                        <small class="text-muted">Preencha os dados abaixo. A matrícula e o plano serão definidos na
+                            próxima etapa.</small>
                     </div>
 
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-secondary">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="text-danger small mt-1">{{ field.errors }}</div>
-                            {% endif %}
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
                     {% endfor %}
-                    
+
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-primary btn-lg">
                             Cadastrar e Avançar <i class="bi bi-arrow-right"></i>
