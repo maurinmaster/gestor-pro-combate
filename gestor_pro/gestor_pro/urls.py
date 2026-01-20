@@ -18,7 +18,8 @@ lista_alunos,
     criar_plano,
     editar_plano,
     excluir_plano,
-    criar_aluno
+    criar_aluno,
+    gerar_recibo,
 )
 
 urlpatterns = [
@@ -47,6 +48,7 @@ urlpatterns = [
     path('plano/excluir/<int:id>/', excluir_plano, name='excluir_plano'),
     path('contratar_plano/<int:id_aluno>/', contratar_plano, name='contratar_plano'),
     path('aluno/novo/', criar_aluno, name='criar_aluno'),
+    path('recibo/<int:id_pagamento>/', gerar_recibo, name='gerar_recibo'),
 ]
 
 # Configuração de Imagens

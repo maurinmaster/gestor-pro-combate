@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Recibo de Pagamento</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12pt;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .titulo {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #4f46e5;
+            text-transform: uppercase;
+        }
+        .recibo-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .linha {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+        .valor-destaque {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #222;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .assinatura {
+            margin-top: 60px;
+            text-align: center;
+        }
+        .linha-assinatura {
+            border-top: 1px solid #000;
+            width: 60%;
+            margin: 0 auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="{% static 'core/img/favicon.png' %}" class="logo" alt="Logo Academia">
+        <br>
+        <div class="titulo">Recibo de Pagamento</div>
+        <div>Gestor Pro Combate - Sua Academia</div>
+    </div>
+
+    <div class="recibo-box">
+        <div class="linha" style="text-align: right;">
+            Recibo Nº: <strong>{{ pagamento.id }}</strong>
+        </div>
+
+        <div class="linha">
+            <span class="label">Recebemos de:</span><br>
+            {{ aluno.nome_completo|upper }} (CPF: {{ aluno.cpf }})
+        </div>
+
+        <div class="linha">
+            <span class="label">A importância de:</span><br>
+            <span class="valor-destaque">R$ {{ pagamento.valor }}</span>
+        </div>
+
+        <div class="linha">
+            <span class="label">Referente a:</span><br>
+            {{ pagamento.descricao }}
+        </div>
+
+        <div class="linha">
+            <span class="label">Data do Pagamento:</span><br>
+            {{ pagamento.data_pagamento|date:"d/m/Y" }}
+        </div>
+        
+        <br>
+        <div class="linha" style="font-size: 10pt; font-style: italic;">
+            Pagamento confirmado no sistema.
+        </div>
+    </div>
+
+    <div class="assinatura">
+        <br><br>
+        <div class="linha-assinatura"></div>
+        Gestor Pro Combate<br>
+        Assinatura do Responsável
+    </div>
+
+    <div class="footer">
+        Gerado em {{ data_geracao|date:"d/m/Y H:i" }}<br>
+        www.suaacademia.com.br
+    </div>
+
+</body>
+</html>

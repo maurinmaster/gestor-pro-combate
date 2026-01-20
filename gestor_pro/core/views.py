@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.db.models import Sum
 import calendar
 from datetime import date
+from .utils import render_to_pdf
 
 @login_required
 def lista_alunos(request):
@@ -351,3 +352,16 @@ def criar_aluno(request):
         form = AlunoForm()
     
     return render(request, 'core/form_aluno.html', {'form': form})
+
+@login_required
+def gerar_recibo(request, id_pagamento):
+    pagamento = get_object_or_404(Pagamento, pk=id_pagamento)
+
+    # Dados que vão aparecer no PDF
+    context = {
+        'pagamento': pagamento,
+        'aluno': pagamento.aluno,
+        'data_geracao': timezone.now()
+    }
+
+    return render_to_pdf('core/recibo_pdf.html', context)

@@ -156,15 +156,22 @@
                                             <small class="text-muted">{{ pg.descricao }}</small>
                                         </div>
                                     </div>
-                                    <div class="text-end">
-                                        <small class="d-block text-muted mb-1">{{ pg.data_pagamento|date:"d/m" }}</small>
-                                        <a href="{% url 'excluir_pagamento' pg.id %}" 
-                                           class="text-danger opacity-50 hover-opacity-100" 
-                                           onclick="return confirm('Tem certeza? Isso anula o pagamento.')"
-                                           title="Excluir">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
+<div class="text-end">
+    <small class="d-block text-muted mb-1">{{ pg.data_pagamento|date:"d/m" }}</small>
+
+    <a href="{% url 'gerar_recibo' pg.id %}" target="_blank" 
+       class="text-primary me-3 hover-opacity-100" 
+       title="Baixar Recibo PDF">
+        <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+    </a>
+
+    <a href="{% url 'excluir_pagamento' pg.id %}" 
+       class="text-danger opacity-50 hover-opacity-100" 
+       onclick="return confirm('Tem certeza? Isso anula o pagamento.')"
+       title="Excluir">
+        <i class="bi bi-trash"></i>
+    </a>
+</div>
                                 </li>
                             {% empty %}
                                 <li class="list-group-item text-center py-5 text-muted border-0">
