@@ -11,6 +11,6 @@ __pycache__/
 # MAS: Se quiseres manter os teus dados de teste no deploy, podes apagar a linha abaixo.
 # db.sqlite3
 
-# Ignorar configurações do editor (opcional)
+
 .vscode/
 db.sqlite3
