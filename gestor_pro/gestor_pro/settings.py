@@ -120,3 +120,5 @@ LOGIN_URL = '/admin/login/'
 
 # Depois de logar, manda para a nossa página inicial
 LOGIN_REDIRECT_URL = '/'
+
+CSRF_TRUSTED_ORIGINS = ['https://gestor.procombate.com']
