@@ -1,16 +1,4 @@
-# Ignorar ambiente virtual
-venv/
-env/
-.venv/
-
-# Ignorar arquivos compilados do Python
-__pycache__/
-*.pyc
-
-# Ignorar base de dados (Por segurança, geralmente não se envia o banco)
-# MAS: Se quiseres manter os teus dados de teste no deploy, podes apagar a linha abaixo.
-# db.sqlite3
-
-
-.vscode/
+/venv
 db.sqlite3
+db.sqlite3
+ db.sqlite3
