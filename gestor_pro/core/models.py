@@ -126,3 +126,81 @@ class Pagamento(models.Model):
 
     def __str__(self):
         return f"{self.aluno} - R$ {self.valor}"
+
+
+# --- NOVOS MODELOS FINANCEIROS ---
+
+class CategoriaGasto(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    cor_hex = models.CharField(max_length=7, default="#CCCCCC", help_text="Cor em Hexadecimal (ex: #FF0000)")
+
+    def __str__(self):
+        return self.nome
+
+class Gasto(models.Model):
+    descricao = models.CharField(max_length=255, verbose_name="Descrição")
+    valor = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor (R$)")
+    data = models.DateField(default=timezone.now, verbose_name="Data do Gasto")
+    categoria = models.ForeignKey(CategoriaGasto, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Categoria")
+    pago = models.BooleanField(default=True, verbose_name="Pago?")
+    observacao = models.TextField(blank=True, null=True, verbose_name="Observação")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.descricao} - R$ {self.valor}"
+
+class ContaFixa(models.Model):
+    nome = models.CharField(max_length=200, verbose_name="Nome da Conta")
+    valor_previsto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor Previsto (R$)")
+    dia_vencimento = models.PositiveIntegerField(verbose_name="Dia de Vencimento (1-31)")
+    ativa = models.BooleanField(default=True, verbose_name="Conta Ativa?")
+    categoria = models.ForeignKey(CategoriaGasto, on_delete=models.SET_NULL, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nome} - Dia {self.dia_vencimento}"
+
+class FaturaMensal(models.Model):
+    """
+    Representa a fatura de uma ContaFixa em um mês específico.
+    Ex: Aluguel (ContaFixa) -> Fatura Janeiro/2026 (FaturaMensal)
+    """
+    conta_fixa = models.ForeignKey(ContaFixa, on_delete=models.CASCADE, related_name="faturas")
+    mes_referencia = models.DateField(verbose_name="Mês de Referência (Dia 1)")
+    valor = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor Real")
+    pago = models.BooleanField(default=False, verbose_name="Pago?")
+    data_pagamento = models.DateField(null=True, blank=True)
+    comprovante = models.FileField(upload_to="comprovantes/", null=True, blank=True)
+
+    class Meta:
+        unique_together = ('conta_fixa', 'mes_referencia')
+
+    def __str__(self):
+        return f"{self.conta_fixa.nome} - {self.mes_referencia.strftime('%m/%Y')}"
+
+class Aviso(models.Model):
+    TIPO_CHOICES = [
+        ('cobranca', 'Cobrança'),
+        ('presenca', 'Falta/Presença'),
+        ('aviso_geral', 'Aviso Geral'),
+        ('parabens', 'Parabéns/Graduação'),
+    ]
+    
+    CANAL_CHOICES = [
+        ('whatsapp', 'WhatsApp'),
+        ('email', 'Email'),
+    ]
+
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name="avisos")
+    tipo = models.CharField(max_length=50, choices=TIPO_CHOICES, default='cobranca')
+    mensagem = models.TextField()
+    data_envio = models.DateTimeField(default=timezone.now)
+    canal = models.CharField(max_length=20, choices=CANAL_CHOICES, default='whatsapp')
+    
+    enviado_por = models.CharField(max_length=100, default='Jarbas', help_text="Quem enviou (Jarbas ou Sistema)")
+
+    def __str__(self):
+        return f"Aviso para {self.aluno.nome_completo} - {self.get_tipo_display()} ({self.data_envio.strftime('%d/%m/%Y')})"

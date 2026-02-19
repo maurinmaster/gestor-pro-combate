@@ -4,3 +4,12 @@ pillow==12.1.0
 sqlparse==0.5.5
 tzdata==2025.3
 xhtml2pdf==0.2.13
+# serve static files in production
+whitenoise==6.6.0
+# Postgres driver
+psycopg2-binary==2.9.9
+# xhtml2pdf pulls reportlab; pin for compatibility (avoids ShowBoundaryValue import error)
+reportlab==4.0.4
+djangorestframework==3.15.2
+markdown==3.7
+django-filter==25.1

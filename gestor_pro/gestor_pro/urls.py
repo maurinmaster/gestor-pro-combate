@@ -1,11 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
 # Importamos TODAS as funções do views.py
 from core.views import (
-lista_alunos, 
+    lista_alunos, 
     editar_aluno, 
     renovar_matricula, 
     contratar_plano,            
@@ -20,11 +20,33 @@ lista_alunos,
     excluir_plano,
     criar_aluno,
     gerar_recibo,
+    # API ViewSets
+    CategoriaGastoViewSet,
+    GastoViewSet,
+    ContaFixaViewSet,
+    FaturaMensalViewSet,
+    AlunoViewSet,
+    AvisoViewSet,
 )
+
+from rest_framework import routers
+
+# Configuração do Router da API
+router = routers.DefaultRouter()
+router.register(r'categorias', CategoriaGastoViewSet)
+router.register(r'gastos', GastoViewSet)
+router.register(r'contas-fixas', ContaFixaViewSet)
+router.register(r'faturas', FaturaMensalViewSet)
+router.register(r'alunos', AlunoViewSet)
+router.register(r'avisos', AvisoViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
+    # API
+    path('api/v1/', include(router.urls)),
+    path('api-token-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
     # Dashboard (Home)
     path('', lista_alunos, name='home'),
     

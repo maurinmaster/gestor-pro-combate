@@ -1,0 +1,21 @@
+{
+  "managedBy": "openclaw-minipaas",
+  "name": "gestor-pro",
+  "service": "gestor-pro",
+  "stack": "django",
+  "domain": "procombate.com",
+  "subdomain": "gestor",
+  "host": "gestor.procombate.com",
+  "internalPort": 8000,
+  "image": null,
+  "repo": "https://github.com/maurinmaster/gestor-pro-combate.git",
+  "branch": "main",
+  "withDb": true,
+  "db": {
+    "name": "gestor_pro",
+    "user": "gestor_pro"
+  },
+  "createdAt": "2026-02-10T14:17:50.560326+00:00",
+  "importedAt": "2026-02-10T14:17:50.560326+00:00",
+  "imported": true
+}

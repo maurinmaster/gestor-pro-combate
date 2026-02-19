@@ -1,0 +1,33 @@
+name: gestor-pro
+services:
+  gestor-pro:
+    build: .
+    container_name: gestor-pro
+    restart: unless-stopped
+    networks:
+      - proxy
+    expose:
+      - "8000"
+    environment:
+      - PORT=8000
+      - POSTGRES_HOST=postgres-core
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=gestor_pro
+      - POSTGRES_USER=core
+      - POSTGRES_PASSWORD_FILE=/run/secrets/pg_password
+    secrets:
+      - pg_password
+    volumes:
+      - gestor_media:/app/media
+      - ./gestor_pro:/app
+
+secrets:
+  pg_password:
+    file: /root/apps/postgres-core/pg_password.txt
+
+volumes:
+  gestor_media:
+
+networks:
+  proxy:
+    external: true
